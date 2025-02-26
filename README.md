@@ -64,9 +64,9 @@ python export_image_embeddings.py --checkpoint checkpoints/sam_vit_h_4b8939.pth 
 ```
 
 
-### For training:
+### For training EndoNerf Pulling:
 
-Use below to try training directly on endonerf data (using feature3dgs train script)
+Use below to try training directly on endonerf data—pulling soft tissues dataset
 
 ```
 python train.py -s ../pulling_soft_tissues --port 6017 --expname endonerf/pulling --configs arguments/endonerf/pulling.py
@@ -85,6 +85,29 @@ python render.py --model_path output/endonerf/pulling  --skip_train --skip_video
 ```
 python metrics.py --model_path output/endonerf/pulling
 ```
+
+### For training EndoNerf Cutting:
+
+Use below to try training directly on endonerf data—cutting dataset
+
+```
+python train.py -s ../cutting_tissues_twice --port 6017 --expname endonerf/cutting --configs arguments/endonerf/cutting1.py
+```
+
+
+### Rendering
+
+```
+python render.py --model_path output/endonerf/cutting  --skip_train --skip_video --configs arguments/endonerf/cutting1.py
+```
+
+
+### Evaluation
+
+```
+python metrics.py --model_path output/endonerf/cutting1.py
+```
+
 
 
 expected folder structure 
