@@ -76,7 +76,6 @@ class EndoNeRF_Dataset(object):
         self.load_meta()
         print(f"meta data loaded, total image:{len(self.image_paths)}")
         #change to higher we dont need test images
-        test_every = 8
         
         n_frames = len(self.image_paths)
         self.train_idxs = [i for i in range(n_frames) if (i-1) % test_every != 0]

@@ -1,4 +1,4 @@
-# EndoGaussian: Gaussian Splatting for Deformable Surgical Scene Reconstruction
+# Feature EndoGaussian: Feature Distilled Gaussian Splatting in Surgical Deformable Scene Reconstruction
 
 ## arXiv Preprint
 

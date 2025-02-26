@@ -35,7 +35,8 @@ class Deformation(nn.Module):
             nn.ReLU(),
             nn.Linear(128, sem_feature_dim)
         )
-        
+        # In addition to the 4 existing deformation networks,
+        # we add a new deformation network for semantic deformation
         return  \
             nn.Sequential(nn.ReLU(),nn.Linear(self.W,self.W),nn.ReLU(),nn.Linear(self.W, 3)),\
             nn.Sequential(nn.ReLU(),nn.Linear(self.W,self.W),nn.ReLU(),nn.Linear(self.W, 3)),\
@@ -91,16 +92,16 @@ class Deformation(nn.Module):
             do = self.opacity_deform(hidden) 
             opacity = opacity_emb[:,:1] + do
 
-        use_sem_feat = True
         # if self.args.no_sf:
-        if use_sem_feat == False:
+        if self.args.no_update_sem_feat:
+            # Don't update the semantic feature
             updated_sem_feat = semantic_feature[:,:,:256]
         else:
-#TODO: implement df, and semantic deform network, and get the resulting sem_feature
             sem_feature_flat = semantic_feature.squeeze(1)  # => [N,256]
             df = self.semantic_deform(hidden)                # => [N,256]
             updated_sem_feat = sem_feature_flat[:,:256] + df 
             updated_sem_feat = updated_sem_feat.unsqueeze(1)
+
 
         return pts, scales, rotations, opacity, updated_sem_feat
     

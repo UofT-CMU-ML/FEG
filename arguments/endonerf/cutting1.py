@@ -10,7 +10,6 @@ OptimizationParams = dict(
     deformation_lr_delay_mult = 0.01,
     grid_lr_init = 0.0016,
     grid_lr_final = 0.0000016,
-    momentum = 0.9,
     iterations = 6000,
     percent_dense = 0.01,
     opacity_reset_interval = 6000,

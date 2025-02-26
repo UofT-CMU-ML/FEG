@@ -240,8 +240,10 @@ def scene_reconstruction(dataset, opt, hyper, pipe, testing_iterations, saving_i
         img_tvloss = TV_loss(rendered_images)
         tv_loss = 0.03 * (img_tvloss + depth_tvloss)
         
-        # loss = Ll1 + depth_loss + tv_loss
-        loss = Ll1
+        if opt.use_tv_and_depth_loss:
+            loss = Ll1 + depth_loss + tv_loss
+        else:
+            loss = Ll1
 
         psnr_ = psnr(rendered_images, gt_images, masks).mean().double()        
         
@@ -255,7 +257,7 @@ def scene_reconstruction(dataset, opt, hyper, pipe, testing_iterations, saving_i
             lpipsloss = lpips_loss(rendered_images,gt_images,lpips_model)
             loss += opt.lambda_lpips * lpipsloss
 
-        if stage == "fine":
+        if opt.use_feature_loss_for_coarse or stage == "fine":
             loss = loss + Ll1_feature
         
         loss.backward()

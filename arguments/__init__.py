@@ -101,6 +101,7 @@ class ModelHiddenParams(ParamGroup):
         self.no_ds=False
         self.no_dr=False
         self.no_do=False
+        self.no_update_sem_feat = False
         super().__init__(parser, "ModelHiddenParams")
         
 class OptimizationParams(ParamGroup):
@@ -141,6 +142,8 @@ class OptimizationParams(ParamGroup):
         self.opacity_threshold_coarse = 0.005
         self.opacity_threshold_fine_init = 0.005
         self.opacity_threshold_fine_after = 0.005
+        self.use_tv_and_depth_loss = False
+        self.use_feature_loss_for_coarse = False
         
         super().__init__(parser, "Optimization Parameters")
 

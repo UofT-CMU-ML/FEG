@@ -94,6 +94,8 @@ def readImages(renders_dir, gt_dir, depth_dir, gtdepth_dir, masks_dir):
         image_names.append(fname)
     return renders, gts, depths, gt_depths, masks, image_names
 
+
+
 def evaluate(model_paths):
 
     full_dict = {}
@@ -180,6 +182,72 @@ def evaluate(model_paths):
                                                             "LPIPS": {name: lp for lp, name in zip(torch.tensor(lpipss).tolist(), image_names)},
                                                             # "FLIP": {name: lp for lp, name in zip(torch.tensor(flipped_metrics).tolist(), image_names)},
                                                             "RMSES": {name: lp for lp, name in zip(torch.tensor(rmses).tolist(), image_names)}})
+
+                ## Routine for feature L1 metric ##
+                # e.g. directories "feature_map" vs "gt_feature_map"
+                feature_map_dir = method_dir / "saved_feature"
+                gt_fmap_dir = method_dir / "gt_feature"
+
+                if feature_map_dir.exists() and gt_fmap_dir.exists():
+                    feat_l1s = []
+                    # We'll load same file basenames
+                    # e.g. '00000fmap_CxHxW.pt' => '00000_gtfmap_CxHxW.pt'
+                    # Or you can keep the same name & subfolders
+
+                    # For each file in feature_map_dir:
+                    f_map_files = sorted(os.listdir(feature_map_dir))
+                    image_names_feat = []  # if needed
+
+                    for ffile in f_map_files:
+                        if not ffile.endswith(".pt"):
+                            continue
+                        # e.g. ffile = "00000_fmap_CxHxW.pt"
+                        # Build path
+                        f_render_path = feature_map_dir / ffile
+                        # Possibly derive GT filename or if same name, just do:
+                        # Replace "fmap_" => "gtfmap_"
+                        f_gt_name = ffile.replace("fmap", "gtfmap")
+                        f_gt_path = gt_fmap_dir / f_gt_name
+
+                        if not f_gt_path.exists():
+                            continue
+
+                        # load
+                        f_render = torch.load(f_render_path).float().cuda()  # [C,Hr,Wr]
+                        f_gt = torch.load(f_gt_path).float().cuda()         # [C,Hg,Wg]
+
+                        # unify shape if needed
+                        Hr, Wr = f_render.shape[-2], f_render.shape[-1]
+                        Hg, Wg = f_gt.shape[-2], f_gt.shape[-1]
+
+                        if (Hr != Hg) or (Wr != Wg):
+                            f_render = torch.nn.functional.interpolate(
+                                f_render.unsqueeze(0),
+                                size=(Hg, Wg),
+                                mode="bilinear",
+                                align_corners=False
+                            ).squeeze(0)
+
+                        # compute L1
+                        l1_val = (f_render - f_gt).abs().mean().item()
+                        feat_l1s.append(l1_val)
+                        image_names_feat.append(ffile)
+
+                    if len(feat_l1s) > 0:
+                        mean_feat_l1 = float(np.mean(feat_l1s))
+                        # store in full_dict
+                        full_dict[scene_dir][method]["FeatureL1"] = mean_feat_l1
+                        # store in per_view
+                        per_view_dict[scene_dir][method].setdefault("FeatureL1", {})
+                        for fname_, v in zip(image_names_feat, feat_l1s):
+                            per_view_dict[scene_dir][method]["FeatureL1"][fname_] = v
+
+                        print(f"Scene:  {scene_dir} FeatureL1: {mean_feat_l1:.5f}")
+
+                    else:
+                        print("No matching .pt for feature maps found, skipping Feature L1.")
+                else:
+                    print("No feature_map or gt_feature_map folder found, skipping feature L1 metric.")
 
             with open(scene_dir + "/results.json", 'w') as fp:
                 json.dump(full_dict[scene_dir], fp, indent=True)

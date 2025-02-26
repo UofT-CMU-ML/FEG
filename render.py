@@ -65,6 +65,7 @@ def render_set(model_path, name, iteration, views, gaussians, pipeline, backgrou
     feature_map_path = os.path.join(model_path, name, "ours_{}".format(iteration), "feature_map")
     gt_feature_map_path = os.path.join(model_path, name, "ours_{}".format(iteration), "gt_feature_map")
     saved_feature_path = os.path.join(model_path, name, "ours_{}".format(iteration), "saved_feature")
+    gt_feature_path = os.path.join(model_path, name, "ours_{}".format(iteration), "gt_feature")
     decoder_ckpt_path = os.path.join(model_path, "decoder_chkpnt{}.pth".format(iteration))
 
     gt_feature_map = views[0].semantic_feature.cuda()
@@ -81,6 +82,7 @@ def render_set(model_path, name, iteration, views, gaussians, pipeline, backgrou
     makedirs(feature_map_path, exist_ok=True)
     makedirs(gt_feature_map_path, exist_ok=True)
     makedirs(saved_feature_path, exist_ok=True)
+    makedirs(gt_feature_path, exist_ok=True)
     
     render_images = []
     render_depths = []
@@ -111,6 +113,9 @@ def render_set(model_path, name, iteration, views, gaussians, pipeline, backgrou
             # save feature map
             feature_map = feature_map.cpu().numpy().astype(np.float16)
             torch.save(torch.tensor(feature_map).half(), os.path.join(saved_feature_path, '{0:05d}'.format(idx) + "_fmap_CxHxW.pt"))
+            # save the ground truth map
+            gt_feature_out_path = os.path.join(gt_feature_path, f"{idx:05d}_gtfmap_CxHxW.pt")
+            torch.save(gt_feature_map.half().cpu(), gt_feature_out_path)
 
     
     if render_test:
