@@ -192,7 +192,7 @@ def readColmapSceneInfo(path, images, eval, llffhold=8):
                            ply_path=ply_path)
     return scene_info
 
-def readEndoNeRFInfo(datadir, mode, foundation_model='sam'):
+def readEndoNeRFInfo(datadir, mode, init_pts, foundation_model='sam'):
     # load camera infos
 
     if foundation_model == 'sam':
@@ -208,7 +208,8 @@ def readEndoNeRFInfo(datadir, mode, foundation_model='sam'):
         datadir=datadir,
         downsample=1.0,
         mode=mode,
-        foundation_model=foundation_model
+        foundation_model=foundation_model,
+        init_pts=init_pts
     )
     train_cam_infos = endo_dataset.format_infos(split="train")
     test_cam_infos = endo_dataset.format_infos(split="test")

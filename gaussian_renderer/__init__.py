@@ -89,21 +89,21 @@ def render(viewpoint_camera, pc : GaussianModel, pipe, bg_color : torch.Tensor, 
     rotations_final = torch.zeros_like(rotations)
     scales_final = torch.zeros_like(scales)
     opacity_final = torch.zeros_like(opacity)
-   #new for semantic features
-    semantic_features_final = torch.zeros_like(semantic_feature)
+    #new for semantic features
+    semantic_feature_final = torch.zeros_like(semantic_feature)
 
     means3D_final[deformation_point] =  means3D_deform
     rotations_final[deformation_point] =  rotations_deform
     scales_final[deformation_point] =  scales_deform
     opacity_final[deformation_point] = opacity_deform
-    semantic_features_final[deformation_point] = semantic_feature_deform
+    semantic_feature_final[deformation_point] = semantic_feature_deform
 
 
     means3D_final[~deformation_point] = means3D[~deformation_point]
     rotations_final[~deformation_point] = rotations[~deformation_point]
     scales_final[~deformation_point] = scales[~deformation_point]
     opacity_final[~deformation_point] = opacity[~deformation_point]
-    semantic_features_final[~deformation_point] = semantic_feature[~deformation_point]
+    semantic_feature_final[~deformation_point] = semantic_feature[~deformation_point]
 
 
     scales_final = pc.scaling_activation(scales_final)
@@ -125,7 +125,6 @@ def render(viewpoint_camera, pc : GaussianModel, pipe, bg_color : torch.Tensor, 
             shs = pc.get_features
     else:
         colors_precomp = override_color
-    semantic_feature = pc.get_semantic_feature ###
 
     # Rasterize visible Gaussians to image, obtain their radii (on screen). 
     rendered_image, feature_map, radii, depth = rasterizer(
@@ -133,7 +132,7 @@ def render(viewpoint_camera, pc : GaussianModel, pipe, bg_color : torch.Tensor, 
         means2D = means2D,
         shs = shs,
         colors_precomp = colors_precomp,
-        semantic_feature = semantic_feature, ###
+        semantic_feature = semantic_feature_final,
         opacities = opacity,
         scales = scales_final,
         rotations = rotations_final,

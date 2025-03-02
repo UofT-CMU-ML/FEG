@@ -48,6 +48,7 @@ class EndoNeRF_Dataset(object):
         datadir,
         downsample=1.0,
         test_every=8,
+        init_pts=30_000,
         mode='binocular',foundation_model=None,semantic_feature_folder=None  # Add this optional argument
     ):
         self.img_wh = (
@@ -61,6 +62,7 @@ class EndoNeRF_Dataset(object):
         self.transform = T.ToTensor()
         self.white_bg = False
         self.mode = mode
+        self.init_pts = init_pts
 
         if semantic_feature_folder is None and foundation_model is not None:
             if foundation_model == 'sam':
@@ -208,7 +210,7 @@ class EndoNeRF_Dataset(object):
                 colors_total.append(colors_sel)
             pts_total = np.concatenate(pts_total)
             colors_total = np.concatenate(colors_total)
-            sel_idxs = np.random.choice(pts_total.shape[0], 30_000, replace=True)
+            sel_idxs = np.random.choice(pts_total.shape[0], self.init_pts, replace=True)
             pts, colors = pts_total[sel_idxs], colors_total[sel_idxs]
             normals = np.zeros((pts.shape[0], 3))
         elif self.mode == 'monocular':
