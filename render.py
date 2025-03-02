@@ -192,7 +192,7 @@ def render_sets(dataset : ModelParams, hyperparam, iteration : int, pipeline : P
         scene = Scene(dataset, gaussians, load_iteration=iteration, shuffle=False, load_coarse=dataset.no_fine)
 
         bg_color = [1,1,1] if dataset.white_background else [0, 0, 0]
-        background = torch.tensor(bg_color, dtype=torch.float32, device="cuda:3")
+        background = torch.tensor(bg_color, dtype=torch.float32, device="cuda:0")
         
         if not skip_train:
             render_set(dataset.model_path, "train", scene.loaded_iter, scene.getTrainCameras(), gaussians, pipeline, background, dataset.no_fine, reconstruct=False)

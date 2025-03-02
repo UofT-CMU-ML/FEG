@@ -28,7 +28,7 @@ import numpy as np
 
 to8b = lambda x : (255*x).to(torch.uint8)
 
-def array2tensor(array, device="cuda:3", dtype=torch.float32):
+def array2tensor(array, device="cuda:0", dtype=torch.float32):
     return torch.tensor(array, dtype=dtype, device=device)
 
 # Learned Perceptual Image Patch Similarity
@@ -36,7 +36,7 @@ class LPIPS(object):
     """
     borrowed from https://github.com/huster-wgm/Pytorch-metrics/blob/master/metrics.py
     """
-    def __init__(self, device="cuda:3"):
+    def __init__(self, device="cuda:0"):
         self.model = lpips.LPIPS(net='alex').to(device)
 
     def __call__(self, y_pred, y_true, normalized=True):
@@ -54,7 +54,7 @@ class LPIPS(object):
         return torch.mean(error)
     
 lpips = LPIPS()
-def cal_lpips(a, b, device="cuda:3", batch=2):
+def cal_lpips(a, b, device="cuda:0", batch=2):
     """Compute lpips.
     a, b: [batch, H, W, 3]"""
     if not torch.is_tensor(a):
@@ -256,7 +256,7 @@ def evaluate(model_paths):
 
 
 if __name__ == "__main__":
-    device = torch.device("cuda:3")
+    device = torch.device("cuda:0")
     torch.cuda.set_device(device)
 
     # Set up command line argument parser

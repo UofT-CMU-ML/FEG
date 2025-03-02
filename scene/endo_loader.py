@@ -185,7 +185,7 @@ class EndoNeRF_Dataset(object):
                     semantic_feature = torch.load(semantic_feature_path)
             
             cameras.append(Camera(colmap_id=idx,R=R,T=T,FoVx=FovX,FoVy=FovY,image=image, depth=depth, mask=mask, gt_alpha_mask=None,
-                          image_name=f"{idx}",uid=idx,data_device=torch.device("cuda:3"),time=time,
+                          image_name=f"{idx}",uid=idx,data_device=torch.device("cuda:0"),time=time,
                           Znear=None, Zfar=None,semantic_feature=semantic_feature,
                           semantic_feature_path=semantic_feature_path,
                           semantic_feature_name=semantic_feature_name))
@@ -462,7 +462,7 @@ class SCARED_Dataset(object):
                     semantic_feature = torch.load(semantic_feature_path)
             
             cameras.append(Camera(colmap_id=idx,R=R,T=T,FoVx=FovX,FoVy=FovY,image=image, depth=depth, mask=mask, gt_alpha_mask=None,
-                          image_name=f"{idx}",uid=idx,data_device=torch.device("cuda:3"),time=time,
+                          image_name=f"{idx}",uid=idx,data_device=torch.device("cuda:0"),time=time,
                           Znear=self.depth_near_thresh, Zfar=self.depth_far_thresh,
                           semantic_feature=semantic_feature,
                           semantic_feature_path=semantic_feature_path,

@@ -37,7 +37,7 @@ class FourDGSdataset(Dataset):
             time = caminfo.time
         
         return Camera(colmap_id=index,R=R,T=T,FoVx=FovX,FoVy=FovY,image=image, depth=depth, mask=mask, gt_alpha_mask=None,
-                          image_name=f"{index}",uid=index,data_device=torch.device("cuda:3"),time=time,
+                          image_name=f"{index}",uid=index,data_device=torch.device("cuda:0"),time=time,
                           Znear=Znear, Zfar=Zfar)
     
     def __len__(self):

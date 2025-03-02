@@ -18,7 +18,7 @@ class Camera(nn.Module):
     def __init__(self, colmap_id, R, T, FoVx, FoVy, image, depth, mask, gt_alpha_mask,
                  image_name, uid, semantic_feature,semantic_feature_path,semantic_feature_name, 
                  trans=np.array([0.0, 0.0, 0.0]), scale=1.0, 
-                 data_device = "cuda:3", time = 0, Znear=None, Zfar=None
+                 data_device = "cuda:0", time = 0, Znear=None, Zfar=None
                  ):
         super(Camera, self).__init__()
 
@@ -40,7 +40,7 @@ class Camera(nn.Module):
         except Exception as e:
             print(e)
             print(f"[Warning] Custom device {data_device} failed, fallback to default cuda device" )
-            self.data_device = torch.device("cuda:3")
+            self.data_device = torch.device("cuda:0")
         
         self.original_image = image.clamp(0.0, 1.0)
         self.original_depth = depth
