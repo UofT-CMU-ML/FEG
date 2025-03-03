@@ -15,7 +15,7 @@ from diff_gaussian_rasterization import GaussianRasterizationSettings, GaussianR
 from scene.gaussian_model import GaussianModel
 from utils.sh_utils import eval_sh
 
-def render(viewpoint_camera, pc : GaussianModel, pipe, bg_color : torch.Tensor, scaling_modifier = 1.0, override_color = None, stage="fine"):
+def render(viewpoint_camera, pc : GaussianModel, pipe, bg_color : torch.Tensor, scaling_modifier = 1.0, override_color = None, stage="fine", no_deformation = False):
     """
     Render the scene. 
     
@@ -75,7 +75,7 @@ def render(viewpoint_camera, pc : GaussianModel, pipe, bg_color : torch.Tensor, 
     # new 
     semantic_feature = pc.get_semantic_feature
 
-    if stage == "coarse" :
+    if stage == "coarse" or no_deformation:
         means3D_deform, scales_deform, rotations_deform, opacity_deform, semantic_feature_deform = means3D, scales, rotations, opacity, semantic_feature
     else:
         means3D_deform, scales_deform, rotations_deform, opacity_deform, semantic_feature_deform = pc._deformation(means3D[deformation_point], scales[deformation_point], 

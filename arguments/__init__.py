@@ -125,8 +125,8 @@ class OptimizationParams(ParamGroup):
         self.scaling_lr = 0.005
         self.rotation_lr = 0.001
         self.percent_dense = 0.01
-        self.lambda_dssim = 0
-        self.lambda_lpips = 0
+        self.lambda_dssim = 0.0
+        self.lambda_lpips = 0.0
         self.weight_constraint_init= 1
         self.weight_constraint_after = 0.2
         self.weight_decay_iteration = 5000
@@ -144,7 +144,8 @@ class OptimizationParams(ParamGroup):
         self.opacity_threshold_fine_after = 0.005
         self.use_tv_and_depth_loss = False
         self.use_feature_loss_for_coarse = False
-        
+        self.no_feature_loss = False
+        self.no_deformation = False
         super().__init__(parser, "Optimization Parameters")
 
 def get_combined_args(parser : ArgumentParser):

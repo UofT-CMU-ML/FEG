@@ -173,7 +173,7 @@ def scene_reconstruction(dataset, opt, hyper, pipe, testing_iterations, saving_i
         gt_features_list = []
         
         for viewpoint_cam in viewpoint_cams:
-            render_pkg = render(viewpoint_cam, gaussians, pipe, background, stage=stage)
+            render_pkg = render(viewpoint_cam, gaussians, pipe, background, stage=stage, opt.no_deformation)
             feature_map, image, depth, viewspace_point_tensor, visibility_filter, radii = render_pkg["feature_map"], render_pkg["render"], render_pkg["depth"], render_pkg["viewspace_points"], render_pkg["visibility_filter"], render_pkg["radii"]
             gt_image = viewpoint_cam.original_image.cuda().float()
             gt_depth = viewpoint_cam.original_depth.cuda().float()
@@ -252,12 +252,14 @@ def scene_reconstruction(dataset, opt, hyper, pipe, testing_iterations, saving_i
             loss += tv_loss
         if opt.lambda_dssim != 0:
             ssim_loss = ssim(rendered_images,gt_images)
-            loss += opt.lambda_dssim * (1.0-ssim_loss)
+            loss = (1.0 - opt.lambda_dssim) * loss + opt.lambda_dssim * (1.0-ssim_loss)
         if opt.lambda_lpips !=0:
             lpipsloss = lpips_loss(rendered_images,gt_images,lpips_model)
             loss += opt.lambda_lpips * lpipsloss
 
-        if opt.use_feature_loss_for_coarse or stage == "fine":
+        # Fine stage, feature loss is on by default (if not disabled)
+        # Coarse stage, feature loss is off by default, unless explicitly enabled
+        if not opt.no_feature_loss and (opt.use_feature_loss_for_coarse or stage == "fine"):
             loss = loss + Ll1_feature
         
         loss.backward()
